@@ -1,12 +1,18 @@
 import { useRef } from 'react';
 import './CanvasItem.css';
 
-function CanvasItem({ item, zoom, onEditText, onDragStart }) {
+function CanvasItem({ item, zoom, onEditText, onDragStart, onEditRectangleTitle, onContextMenu, onResizeStart }) {
   const mouseDownPosRef = useRef(null);
+  const wasResizingRef = useRef(false);
 
   const handleMouseDown = (e) => {
-    // Only allow dragging for text and file items (not rectangles)
-    if (item.type === 'text' || item.type === 'file') {
+    // Don't trigger drag if clicking on resize handle
+    if (e.target.classList.contains('resize-handle')) {
+      return;
+    }
+
+    // Allow dragging for text, file, and rectangle items
+    if (item.type === 'text' || item.type === 'file' || item.type === 'rectangle') {
       e.stopPropagation(); // Prevent canvas panning
 
       // Record initial position to detect drag vs click
@@ -18,8 +24,37 @@ function CanvasItem({ item, zoom, onEditText, onDragStart }) {
     }
   };
 
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (onContextMenu) {
+      onContextMenu(e, item);
+    }
+  };
+
+  const handleResizeMouseDown = (e, direction) => {
+    e.stopPropagation();
+
+    wasResizingRef.current = true;
+
+    if (onResizeStart) {
+      onResizeStart(item.id, e.clientX, e.clientY, direction);
+    }
+
+    // Reset flag after a short delay
+    setTimeout(() => {
+      wasResizingRef.current = false;
+    }, 100);
+  };
+
   const handleClick = (e) => {
     e.stopPropagation();
+
+    // Don't trigger click if we were just resizing
+    if (wasResizingRef.current) {
+      return;
+    }
 
     // Check if this was a drag or a click
     if (mouseDownPosRef.current) {
@@ -45,6 +80,19 @@ function CanvasItem({ item, zoom, onEditText, onDragStart }) {
     }
   };
 
+  const handleDoubleClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Double-click on rectangle to edit title
+    if (item.type === 'rectangle' && onEditRectangleTitle) {
+      onEditRectangleTitle(item);
+    } else if (item.type === 'text' && onEditText) {
+      // Double-click on text to edit
+      onEditText(item);
+    }
+  };
+
   return (
     <div
       className={`canvas-item canvas-item-${item.type}`}
@@ -57,13 +105,21 @@ function CanvasItem({ item, zoom, onEditText, onDragStart }) {
       }}
       onMouseDown={handleMouseDown}
       onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
+      onContextMenu={handleContextMenu}
     >
       {/* File card */}
       {item.type === 'file' && (
-        <div className="file-card">
-          <div className="file-icon">📄</div>
-          <div className="file-name">{item.file_name}</div>
-        </div>
+        <>
+          <div className="file-card">
+            <div className="file-icon">📄</div>
+            <div className="file-name">{item.file_name}</div>
+          </div>
+          <div
+            className="resize-handle resize-se"
+            onMouseDown={(e) => handleResizeMouseDown(e, 'se')}
+          />
+        </>
       )}
 
       {/* Text note */}
@@ -73,9 +129,18 @@ function CanvasItem({ item, zoom, onEditText, onDragStart }) {
         </div>
       )}
 
-      {/* Rectangle border */}
+      {/* Rectangle border with title */}
       {item.type === 'rectangle' && (
-        <div className="rectangle-border" />
+        <>
+          <div className="rectangle-border" />
+          <div className="rectangle-title">
+            {item.content || 'Untitled'}
+          </div>
+          <div
+            className="resize-handle resize-se"
+            onMouseDown={(e) => handleResizeMouseDown(e, 'se')}
+          />
+        </>
       )}
     </div>
   );

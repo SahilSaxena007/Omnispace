@@ -174,18 +174,18 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 ---
 
-## Step 11: Rectangle Drawing Tool
+## Step 11: Rectangle Drawing Tool ✓
 **Goal:** Press R to enter rectangle mode, click-drag to draw.
 
-- [ ] Create state: `const [tool, setTool] = useState('select')` — 'select' or 'rectangle'
-- [ ] Listen for 'r' keypress → set tool to 'rectangle'
-- [ ] Create state for drawing: `const [drawStart, setDrawStart] = useState(null)`
-- [ ] In rectangle mode, on `mousedown` on viewport:
+- [x] Create state: `const [tool, setTool] = useState('select')` — 'select' or 'rectangle'
+- [x] Listen for 'r' keypress → set tool to 'rectangle'
+- [x] Create state for drawing: `const [drawStart, setDrawStart] = useState(null)`
+- [x] In rectangle mode, on `mousedown` on viewport:
   - Convert to world coords, store as `drawStart`
-- [ ] On `mousemove` while drawing:
+- [x] On `mousemove` while drawing:
   - Track current world position in state for preview
   - Render a dashed rectangle from drawStart to current position
-- [ ] On `mouseup`:
+- [x] On `mouseup`:
   - Compute x, y (top-left), width, height from start and end points:
     ```js
     x = Math.min(start.x, end.x)
@@ -195,29 +195,29 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     ```
   - Insert into Supabase with type='rectangle'
   - Add to items, reset tool to 'select'
-- [ ] Set cursor to `crosshair` when in rectangle mode
+- [x] Set cursor to `crosshair` when in rectangle mode
 
 ---
 
-## Step 12: Toolbar
+## Step 12: Toolbar ✓
 **Goal:** Fixed UI showing current tool and zoom level.
 
-- [ ] Create `src/components/Toolbar.jsx`
-- [ ] Props: `tool`, `zoom`
-- [ ] Position: `position: fixed; top: 16px; left: 16px; z-index: 100`
-- [ ] Style: dark semi-transparent background, white text, rounded, padding
-- [ ] Display: tool name ("Select" / "Rectangle") and zoom percentage (`Math.round(zoom * 100) + '%'`)
+- [x] Create `src/components/Toolbar.jsx`
+- [x] Props: `tool`, `zoom`
+- [x] Position: `position: fixed; top: 16px; left: 16px; z-index: 100`
+- [x] Style: dark semi-transparent background, white text, rounded, padding
+- [x] Display: tool name ("Select" / "Rectangle") and zoom percentage (`Math.round(zoom * 100) + '%'`)
 
 ---
 
-## Step 13: Final Polish
+## Step 13: Final Polish ✓
 **Goal:** Make everything feel tight.
 
-- [ ] Ensure `body { margin: 0; overflow: hidden; }` is set
-- [ ] Cursor states: default → `grab` (space held) → `grabbing` (panning) → `crosshair` (rectangle mode)
-- [ ] Prevent default on scroll so page doesn't bounce
-- [ ] Test: refresh page, all items reload from Supabase
-- [ ] Test: all features work together without conflicts
+- [x] Ensure `body { margin: 0; overflow: hidden; }` is set
+- [x] Cursor states: default → `grab` (space held) → `grabbing` (panning) → `crosshair` (rectangle mode)
+- [x] Prevent default on scroll so page doesn't bounce
+- [x] Test: refresh page, all items reload from Supabase
+- [x] Test: all features work together without conflicts
 
 ---
 

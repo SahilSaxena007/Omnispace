@@ -5,10 +5,30 @@
   position: relative;
   overflow: hidden;
   cursor: default;
+  /* Prevent text selection during pan/zoom */
+  user-select: none;
+  -webkit-user-select: none;
+  /* Smooth rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.viewport.space-held {
+  cursor: grab;
+}
+
+.viewport.panning {
+  cursor: grabbing !important;
+}
+
+.viewport.rectangle-mode {
+  cursor: crosshair;
 }
 
 .world {
   position: absolute;
   width: 100%;
   height: 100%;
+  /* Enable GPU acceleration for transforms */
+  will-change: transform;
 }

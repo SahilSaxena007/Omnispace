@@ -54,9 +54,11 @@ src/
 - [x] File drop upload (Step 8 ✓)
 - [x] Text notes (double-click) (Step 9 ✓)
 - [x] Drag items to reposition (Step 10 ✓)
-- [ ] Rectangle drawing tool
-- [ ] Toolbar
-- [ ] Final polish
+- [x] Rectangle drawing tool (Step 11 ✓)
+- [x] Toolbar (Step 12 ✓)
+- [x] Final polish (Step 13 ✓)
+
+**🎉 ALL CORE FEATURES COMPLETE! 🎉**
 
 ## Instructions:
 

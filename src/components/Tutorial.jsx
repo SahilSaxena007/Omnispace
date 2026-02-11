@@ -57,7 +57,7 @@ function Tutorial() {
             </div>
 
             <div className="tutorial-section">
-              <h3>✏️ Content Creation</h3>
+              <h3>✏️ Content Management</h3>
               <div className="control-item">
                 <kbd>Double Click</kbd>
                 <span className="control-desc">Create text note</span>
@@ -70,13 +70,37 @@ function Tutorial() {
                 <kbd>Click & Drag Item</kbd>
                 <span className="control-desc">Move items around</span>
               </div>
+              <div className="control-item">
+                <kbd>Drag Corner Handle</kbd>
+                <span className="control-desc">Resize files and rectangles</span>
+              </div>
+              <div className="control-item">
+                <kbd>Right Click Item</kbd>
+                <span className="control-desc">Open context menu (rename/delete)</span>
+              </div>
             </div>
 
             <div className="tutorial-section">
-              <h3>📦 Coming Soon</h3>
-              <div className="control-item disabled">
+              <h3>📦 Folders (Rectangles)</h3>
+              <div className="control-item">
                 <kbd>R</kbd>
-                <span className="control-desc">Draw rectangle dividers</span>
+                <span className="control-desc">Enter rectangle drawing mode</span>
+              </div>
+              <div className="control-item">
+                <kbd>Click & Drag</kbd>
+                <span className="control-desc">Draw a folder rectangle</span>
+              </div>
+              <div className="control-item">
+                <kbd>Double Click Rectangle</kbd>
+                <span className="control-desc">Edit folder name</span>
+              </div>
+              <div className="control-item">
+                <kbd>Drag Rectangle</kbd>
+                <span className="control-desc">Move folder (items inside move with it)</span>
+              </div>
+              <div className="control-item">
+                <kbd>Esc</kbd>
+                <span className="control-desc">Exit rectangle mode</span>
               </div>
             </div>
           </div>
