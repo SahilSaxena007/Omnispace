@@ -35,23 +35,19 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 ---
 
-## Step 3: Canvas Layout & Dot Grid
+## Step 3: Canvas Layout & Dot Grid ✓
 **Goal:** Dark canvas with a dot grid that responds to pan/zoom.
 
-- [ ] In `App.jsx`, create state: `const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 })`
-- [ ] Create the viewport div (`className="viewport"`) — full screen, `overflow: hidden`
-- [ ] Inside it, create the world div (`className="world"`) — gets the CSS transform
-- [ ] CSS transform formula: `translate(${-camera.x * camera.zoom + window.innerWidth/2}px, ${-camera.y * camera.zoom + window.innerHeight/2}px) scale(${camera.zoom})`
-- [ ] Set `transform-origin: 0 0` on the world div
-- [ ] In `App.css`, style viewport: `width: 100vw; height: 100vh; background: #1a1a1a; position: relative`
-- [ ] Add dot grid using CSS on viewport:
-  ```css
-  background-image: radial-gradient(circle, #333 1px, transparent 1px);
-  background-size: /* 30px * zoom */;
-  background-position: /* tied to camera offset */;
-  ```
-- [ ] Set dot grid background-size and background-position as inline styles (they depend on camera state)
-- [ ] Reset body margin/padding to 0 in `index.css`, set `overflow: hidden`
+- [x] In `App.jsx`, create state: `const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 })`
+- [x] Create the viewport div (`className="viewport"`) — full screen, `overflow: hidden`
+- [x] Inside it, create the world div (`className="world"`) — gets the CSS transform
+- [x] CSS transform formula: `translate(${-camera.x * camera.zoom + window.innerWidth/2}px, ${-camera.y * camera.zoom + window.innerHeight/2}px) scale(${camera.zoom})`
+- [x] Set `transform-origin: 0 0` on the world div
+- [x] In `App.css`, style viewport: `width: 100vw; height: 100vh; background: #1a1a1a; position: relative`
+- [x] Add dot grid using CSS on viewport with radial-gradient
+- [x] Set dot grid background-size and background-position as inline styles (calculated from camera state)
+- [x] Body margin/padding already set to 0 in `index.css`, overflow hidden
+- [x] Added missing `useState` import from React
 
 ---
 
