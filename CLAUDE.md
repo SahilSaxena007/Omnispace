@@ -45,7 +45,7 @@ src/
 ## Current Status
 
 - [x] Project scaffolded (Step 1 ✓)
-- [ ] Supabase client created
+- [x] Supabase client created (Step 2 ✓)
 - [ ] Canvas layout & dot grid
 - [ ] Pan controls
 - [ ] Zoom controls
@@ -61,3 +61,7 @@ src/
 ## Instructions:
 
 - Update '/CHECKLIST.md' after each task completed.
+
+## Files:
+- **CHECKLIST.md** - Quick reference checklist
+- **CHECKLIST_HUMAN.md** - Detailed learning guide with technical explanations

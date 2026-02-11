@@ -15,13 +15,17 @@ Each step below is self-contained. You can execute them in order manually or ask
 
 ---
 
-## Step 2: Create Supabase Client
+## Step 2: Create Supabase Client ✓
 **Goal:** A reusable module that exports the Supabase client.
 
-- [ ] Create `src/supabaseClient.js`
-- [ ] Import `createClient` from `@supabase/supabase-js`
-- [ ] Initialize with URL `https://chjvnnrsmlxetuxmgjlc.supabase.co` and anon key
-- [ ] Export the client as default
+- [x] Create `src/supabaseClient.js`
+- [x] Import `createClient` from `@supabase/supabase-js`
+- [x] Initialize with URL and anon key from environment variables
+- [x] Export the client as named export
+- [x] Created `.env` file with Vite-prefixed env vars
+- [x] Added `.env` to `.gitignore`
+- [x] Created `.env.example` for reference
+- [x] Verified client initializes correctly
 
 **Code pattern:**
 ```js
