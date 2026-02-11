@@ -48,9 +48,9 @@ src/
 - [x] Supabase client created (Step 2 ✓)
 - [x] Canvas layout & dot grid (Step 3 ✓)
 - [x] Pan controls (Step 4 ✓)
-- [ ] Zoom controls
-- [ ] Load items from Supabase
-- [ ] Render items on canvas
+- [x] Zoom controls (Step 5 ✓)
+- [x] Load items from Supabase (Step 6 ✓)
+- [x] Render items on canvas (Step 7 ✓)
 - [ ] File drop upload
 - [ ] Text notes (double-click)
 - [ ] Drag items to reposition

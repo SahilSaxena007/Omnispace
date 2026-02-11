@@ -54,69 +54,65 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 ## Step 4: Pan Controls ✓
 **Goal:** Drag to pan the canvas.
 
-- [ ] Track `spaceHeld` in a ref (keydown/keyup listeners for spacebar)
-- [ ] On `mousedown` in viewport: if middle button (button===1) or (left button + space held), start panning
-- [ ] Store pan start state in a ref: `{ startX: e.clientX, startY: e.clientY, camX: camera.x, camY: camera.y }`
-- [ ] On `mousemove` while panning: compute delta, update camera:
-  ```js
-  camX = panStart.camX - (e.clientX - panStart.startX) / camera.zoom
-  camY = panStart.camY - (e.clientY - panStart.startY) / camera.zoom
-  ```
-- [ ] On `mouseup`, stop panning
-- [ ] Set cursor to `grab` when space is held, `grabbing` while actively panning
+- [x] Track `spaceHeld` in a ref (keydown/keyup listeners for spacebar)
+- [x] On `mousedown` in viewport: if middle button (button===1) or (left button + space held), start panning
+- [x] Store pan start state in a ref: `{ startX: e.clientX, startY: e.clientY, camX: camera.x, camY: camera.y }`
+- [x] On `mousemove` while panning: compute delta, update camera
+- [x] On `mouseup`, stop panning
+- [x] Set cursor to `grab` when space is held, `grabbing` while actively panning
 
 ---
 
-## Step 5: Zoom Controls
+## Step 5: Zoom Controls ✓
 **Goal:** Scroll wheel zooms centered on the cursor position.
 
-- [ ] Listen for `wheel` event on viewport (use `{ passive: false }` and `e.preventDefault()`)
-- [ ] Compute world point under cursor BEFORE zoom:
-  ```js
-  worldX = (e.clientX - window.innerWidth/2) / oldZoom + camera.x
-  worldY = (e.clientY - window.innerHeight/2) / oldZoom + camera.y
-  ```
-- [ ] Compute new zoom: `newZoom = oldZoom * (e.deltaY > 0 ? 0.9 : 1.1)`, clamp to [0.1, 5]
-- [ ] Adjust camera so the same world point stays under cursor:
-  ```js
-  newCamX = worldX - (e.clientX - window.innerWidth/2) / newZoom
-  newCamY = worldY - (e.clientY - window.innerHeight/2) / newZoom
-  ```
-- [ ] Update camera state with new x, y, zoom
+- [x] Listen for `wheel` event on viewport (use `{ passive: false }` and `e.preventDefault()`)
+- [x] Compute world point under cursor BEFORE zoom
+- [x] Compute new zoom: `newZoom = oldZoom * (e.deltaY > 0 ? 0.9 : 1.1)`, clamp to [0.1, 5]
+- [x] Adjust camera so the same world point stays under cursor
+- [x] Update camera state with new x, y, zoom
+- [x] Added viewportRef for native event listener
+- [x] Added useEffect to attach wheel listener with passive: false
 
 ---
 
-## Step 6: Load Items from Supabase
+## Step 6: Load Items from Supabase ✓
 **Goal:** Fetch all existing items on page load.
 
-- [ ] Create state: `const [items, setItems] = useState([])`
-- [ ] In `useEffect` (run once on mount):
-  ```js
-  const { data } = await supabase.from('items').select('*')
-  if (data) setItems(data)
-  ```
-- [ ] Items will be rendered in the next step
+- [x] Create state: `const [items, setItems] = useState([])`
+- [x] Create loading state: `const [loading, setLoading] = useState(true)`
+- [x] In `useEffect` (run once on mount):
+  - Fetch items with `supabase.from('items').select('*')`
+  - Order by `created_at` ascending
+  - Handle errors with try/catch
+  - Set loading to false when done
+- [x] Added loading indicator overlay
+- [x] Added temporary items count display
+- [x] Items will be rendered in the next step
 
 ---
 
-## Step 7: Render Items on Canvas
+## Step 7: Render Items on Canvas ✓
 **Goal:** Display file cards, text notes, and rectangles on the canvas.
 
-- [ ] Create `src/components/CanvasItem.jsx`
-- [ ] Receives props: `item`, `onDragEnd`, `zoom`, `onStartEdit` (for text)
-- [ ] Position with: `style={{ position: 'absolute', left: item.x, top: item.y }}`
-- [ ] **File items** (`type='file'`):
+- [x] Create `src/components/CanvasItem.jsx`
+- [x] Receives props: `item`, `zoom`
+- [x] Position with: `style={{ position: 'absolute', left: item.x, top: item.y }}`
+- [x] **File items** (`type='file'`):
   - White background, rounded corners, 180x120px
   - Show `item.file_name` truncated (CSS `text-overflow: ellipsis`)
   - `onClick` → `window.open(item.content, '_blank')`
-- [ ] **Text items** (`type='text'`):
+- [x] **Text items** (`type='text'`):
   - Light gray background (#2a2a2a), padding, rounded corners
-  - Show `item.content` as text
-- [ ] **Rectangle items** (`type='rectangle'`):
+  - Show `item.content` as text (supports multi-line with pre-wrap)
+- [x] **Rectangle items** (`type='rectangle'`):
   - `border: 2px solid white`, no background
   - Set `width` and `height` from item
   - `pointer-events: none` so they don't block clicking
-- [ ] Map over `items` array in App.jsx, render `<CanvasItem>` inside the world div
+- [x] Map over `items` array in App.jsx, render `<CanvasItem>` inside the world div
+- [x] Created CanvasItem.css with styles for all item types
+- [x] Added hover effects for better UX
+- [x] Removed temporary "items loaded" message
 
 ---
 
