@@ -47,7 +47,7 @@ src/
 - [x] Project scaffolded (Step 1 ✓)
 - [x] Supabase client created (Step 2 ✓)
 - [x] Canvas layout & dot grid (Step 3 ✓)
-- [ ] Pan controls
+- [x] Pan controls (Step 4 ✓)
 - [ ] Zoom controls
 - [ ] Load items from Supabase
 - [ ] Render items on canvas

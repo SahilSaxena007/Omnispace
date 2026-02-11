@@ -51,7 +51,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 ---
 
-## Step 4: Pan Controls
+## Step 4: Pan Controls ✓
 **Goal:** Drag to pan the canvas.
 
 - [ ] Track `spaceHeld` in a ref (keydown/keyup listeners for spacebar)
