@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install react react-dom @supabase/supabase-js)",
+      "Bash(npm install -D vite @vitejs/plugin-react)",
+      "Bash(npm run dev)"
+    ]
+  }
+}
