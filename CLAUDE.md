@@ -53,14 +53,14 @@ src/
 - [x] Render items on canvas (Step 7 ✓)
 - [x] File drop upload (Step 8 ✓)
 - [x] Text notes (double-click) (Step 9 ✓)
-- [ ] Drag items to reposition
+- [x] Drag items to reposition (Step 10 ✓)
 - [ ] Rectangle drawing tool
 - [ ] Toolbar
 - [ ] Final polish
 
 ## Instructions:
 
-- Update '/CHECKLIST.md' after each task completed.
+- **IMPORTANT:** Update `CHECKLIST.md` after completing an ENTIRE step (when all sub-tasks are done). Mark the step's title with ✓ and check all sub-task boxes [x].
 
 ## Files:
 - **CHECKLIST.md** - Quick reference checklist

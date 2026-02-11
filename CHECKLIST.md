@@ -156,19 +156,19 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 ---
 
-## Step 10: Drag Items to Reposition
+## Step 10: Drag Items to Reposition ✓
 **Goal:** Drag text notes and file cards to move them, save new position.
 
-- [ ] In `CanvasItem`, on `mousedown` (for file/text types only):
+- [x] In `CanvasItem`, on `mousedown` (for file/text types only):
   - `e.stopPropagation()` to prevent canvas pan
   - Record start: `{ mouseX: e.clientX, mouseY: e.clientY, itemX: item.x, itemY: item.y }`
-- [ ] On `mousemove` (attach to `window`):
+- [x] On `mousemove` (attach to `window`):
   ```js
   newX = start.itemX + (e.clientX - start.mouseX) / zoom
   newY = start.itemY + (e.clientY - start.mouseY) / zoom
   ```
-- [ ] Update item position in local state for immediate feedback
-- [ ] On `mouseup`:
+- [x] Update item position in local state for immediate feedback
+- [x] On `mouseup`:
   - Detach listeners
   - Call `supabase.from('items').update({ x: newX, y: newY }).eq('id', item.id)`
 

@@ -63,17 +63,17 @@ function Tutorial() {
                 <span className="control-desc">Create text note</span>
               </div>
               <div className="control-item">
-                <kbd>Drag & Drop</kbd>
+                <kbd>Drag & Drop File</kbd>
                 <span className="control-desc">Upload files from desktop</span>
+              </div>
+              <div className="control-item">
+                <kbd>Click & Drag Item</kbd>
+                <span className="control-desc">Move items around</span>
               </div>
             </div>
 
             <div className="tutorial-section">
               <h3>📦 Coming Soon</h3>
-              <div className="control-item disabled">
-                <kbd>Click & Drag</kbd>
-                <span className="control-desc">Move items around</span>
-              </div>
               <div className="control-item disabled">
                 <kbd>R</kbd>
                 <span className="control-desc">Draw rectangle dividers</span>

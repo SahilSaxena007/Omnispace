@@ -1,8 +1,12 @@
 /* Base canvas item */
 .canvas-item {
-  cursor: pointer;
+  cursor: move;
   user-select: none;
   transition: transform 0.1s ease;
+}
+
+.canvas-item:active {
+  cursor: grabbing;
 }
 
 /* File cards */

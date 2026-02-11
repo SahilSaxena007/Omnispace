@@ -16,6 +16,7 @@ function App() {
   const [editingText, setEditingText] = useState(null); // { x, y, itemId, width, height } or null
   const [textValue, setTextValue] = useState('');
   const [textDimensions, setTextDimensions] = useState({ width: 200, height: 60 });
+  const [draggingItem, setDraggingItem] = useState(null); // { id, startX, startY, originalX, originalY } or null
 
   // Refs (for values that don't need to trigger re-renders)
   const panStartRef = useRef(null); // { mouseX, mouseY, camX, camY }
@@ -259,6 +260,81 @@ function App() {
     setTextDimensions({ width: item.width, height: item.height });
   };
 
+  // Drag handlers for repositioning items
+  const handleItemDragStart = (itemId, mouseX, mouseY) => {
+    const item = items.find(i => i.id === itemId);
+    if (!item) return;
+
+    setDraggingItem({
+      id: itemId,
+      startX: mouseX,
+      startY: mouseY,
+      originalX: item.x,
+      originalY: item.y
+    });
+  };
+
+  const handleItemDragMove = (e) => {
+    if (!draggingItem) return;
+
+    const deltaX = e.clientX - draggingItem.startX;
+    const deltaY = e.clientY - draggingItem.startY;
+
+    // Convert screen delta to world delta (divide by zoom)
+    const worldDeltaX = deltaX / camera.zoom;
+    const worldDeltaY = deltaY / camera.zoom;
+
+    // Update item position in local state (immediate feedback)
+    setItems(items.map(item =>
+      item.id === draggingItem.id
+        ? {
+            ...item,
+            x: draggingItem.originalX + worldDeltaX,
+            y: draggingItem.originalY + worldDeltaY
+          }
+        : item
+    ));
+  };
+
+  const handleItemDragEnd = async () => {
+    if (!draggingItem) return;
+
+    const item = items.find(i => i.id === draggingItem.id);
+    if (!item) return;
+
+    // Save final position to database
+    try {
+      const { error } = await supabase
+        .from('items')
+        .update({ x: item.x, y: item.y })
+        .eq('id', draggingItem.id);
+
+      if (error) {
+        console.error('Error updating item position:', error);
+        // Optionally revert to original position on error
+      } else {
+        console.log('Item position updated successfully');
+      }
+    } catch (err) {
+      console.error('Failed to update position:', err);
+    }
+
+    setDraggingItem(null);
+  };
+
+  // Attach drag move/end listeners when dragging
+  useEffect(() => {
+    if (draggingItem) {
+      window.addEventListener('mousemove', handleItemDragMove);
+      window.addEventListener('mouseup', handleItemDragEnd);
+
+      return () => {
+        window.removeEventListener('mousemove', handleItemDragMove);
+        window.removeEventListener('mouseup', handleItemDragEnd);
+      };
+    }
+  }, [draggingItem, camera.zoom, items]);
+
   // Save text note to database
   const saveTextNote = async () => {
     if (!textValue.trim() || !editingText) {
@@ -411,6 +487,7 @@ function App() {
               item={item}
               zoom={camera.zoom}
               onEditText={handleEditText}
+              onDragStart={handleItemDragStart}
             />
           ))}
 
