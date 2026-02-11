@@ -13,15 +13,24 @@ function App() {
   const [isPanning, setIsPanning] = useState(false);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingText, setEditingText] = useState(null); // { x, y, itemId, width, height } or null
+  const [textValue, setTextValue] = useState('');
+  const [textDimensions, setTextDimensions] = useState({ width: 200, height: 60 });
 
   // Refs (for values that don't need to trigger re-renders)
   const panStartRef = useRef(null); // { mouseX, mouseY, camX, camY }
   const spaceHeldRef = useRef(false);
   const viewportRef = useRef(null); // Reference to viewport DOM element
+  const textInputRef = useRef(null); // Reference to text input for auto-focus
 
   // Keyboard listeners for spacebar
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Don't capture space if typing in text input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+
       if (e.code === 'Space') {
         e.preventDefault(); // Prevent page scroll
         spaceHeldRef.current = true;
@@ -29,6 +38,11 @@ function App() {
     };
 
     const handleKeyUp = (e) => {
+      // Don't capture space if typing in text input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+
       if (e.code === 'Space') {
         spaceHeldRef.current = false;
       }
@@ -104,6 +118,75 @@ function App() {
     panStartRef.current = null;
   };
 
+  // File drop handlers
+  const handleDragOver = (e) => {
+    e.preventDefault(); // Required to allow drop
+    e.dataTransfer.dropEffect = 'copy'; // Show copy cursor
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    try {
+      // Convert screen coordinates to world coordinates
+      const rect = viewportRef.current.getBoundingClientRect();
+      const screenX = e.clientX - rect.left;
+      const screenY = e.clientY - rect.top;
+
+      const worldX = (screenX - window.innerWidth / 2) / camera.zoom + camera.x;
+      const worldY = (screenY - window.innerHeight / 2) / camera.zoom + camera.y;
+
+      // Upload file to Supabase Storage
+      const filePath = `${Date.now()}_${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('files')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        alert('Failed to upload file: ' + uploadError.message);
+        return;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('files')
+        .getPublicUrl(filePath);
+
+      // Create database record
+      const { data: newItem, error: dbError } = await supabase
+        .from('items')
+        .insert({
+          type: 'file',
+          x: worldX,
+          y: worldY,
+          width: 180,
+          height: 120,
+          content: urlData.publicUrl,
+          file_name: file.name
+        })
+        .select()
+        .single();
+
+      if (dbError) {
+        console.error('Database error:', dbError);
+        alert('Failed to save file to database: ' + dbError.message);
+        return;
+      }
+
+      // Add to local state
+      setItems([...items, newItem]);
+      console.log('File uploaded successfully:', file.name);
+
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      alert('Failed to upload file');
+    }
+  };
+
   // Wheel handler for zooming (centered on cursor)
   const handleWheel = (e) => {
     e.preventDefault(); // Prevent page scroll
@@ -140,6 +223,135 @@ function App() {
     };
   }, [camera]); // Re-attach when camera changes (needed for closure)
 
+  // Auto-focus text input when editing starts
+  useEffect(() => {
+    if (editingText && textInputRef.current) {
+      textInputRef.current.focus();
+    }
+  }, [editingText]);
+
+  // Double-click handler for creating text notes
+  const handleDoubleClick = (e) => {
+    // Only create text if clicking on the world layer (not on existing items)
+    if (e.target.classList.contains('world') || e.target.classList.contains('viewport')) {
+      const rect = viewportRef.current.getBoundingClientRect();
+      const screenX = e.clientX - rect.left;
+      const screenY = e.clientY - rect.top;
+
+      const worldX = (screenX - window.innerWidth / 2) / camera.zoom + camera.x;
+      const worldY = (screenY - window.innerHeight / 2) / camera.zoom + camera.y;
+
+      setEditingText({ x: worldX, y: worldY });
+      setTextValue('');
+    }
+  };
+
+  // Handler for editing existing text notes
+  const handleEditText = (item) => {
+    setEditingText({
+      x: item.x,
+      y: item.y,
+      itemId: item.id,
+      width: item.width,
+      height: item.height
+    });
+    setTextValue(item.content);
+    setTextDimensions({ width: item.width, height: item.height });
+  };
+
+  // Save text note to database
+  const saveTextNote = async () => {
+    if (!textValue.trim() || !editingText) {
+      setEditingText(null);
+      setTextValue('');
+      return;
+    }
+
+    try {
+      // Get current textarea dimensions
+      const currentWidth = textInputRef.current?.offsetWidth || textDimensions.width;
+      const currentHeight = textInputRef.current?.offsetHeight || textDimensions.height;
+
+      // Enforce max dimensions
+      const maxWidth = 600;
+      const maxHeight = 400;
+      const finalWidth = Math.min(currentWidth, maxWidth);
+      const finalHeight = Math.min(currentHeight, maxHeight);
+
+      if (editingText.itemId) {
+        // Updating existing item
+        const { error } = await supabase
+          .from('items')
+          .update({
+            content: textValue,
+            width: finalWidth,
+            height: finalHeight
+          })
+          .eq('id', editingText.itemId);
+
+        if (error) {
+          console.error('Error updating text note:', error);
+          alert('Failed to update text note: ' + error.message);
+          return;
+        }
+
+        // Update local state
+        setItems(items.map(item =>
+          item.id === editingText.itemId
+            ? { ...item, content: textValue, width: finalWidth, height: finalHeight }
+            : item
+        ));
+        console.log('Text note updated successfully');
+
+      } else {
+        // Creating new item
+        const { data: newItem, error } = await supabase
+          .from('items')
+          .insert({
+            type: 'text',
+            x: editingText.x,
+            y: editingText.y,
+            width: finalWidth,
+            height: finalHeight,
+            content: textValue
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error saving text note:', error);
+          alert('Failed to save text note: ' + error.message);
+          return;
+        }
+
+        setItems([...items, newItem]);
+        console.log('Text note created successfully');
+      }
+
+      setEditingText(null);
+      setTextValue('');
+      setTextDimensions({ width: 200, height: 60 }); // Reset to default
+
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      alert('Failed to save text note');
+    }
+  };
+
+  // Handle keyboard input while editing text
+  const handleTextKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      // Enter without Shift = Save
+      e.preventDefault();
+      saveTextNote();
+    } else if (e.key === 'Escape') {
+      // Escape = Cancel
+      setEditingText(null);
+      setTextValue('');
+    }
+    // Shift+Enter = Allow default (new line)
+  };
+
   console.log("Camera:", camera);
   console.log("Items loaded:", items.length);
 
@@ -162,6 +374,9 @@ function App() {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        onDoubleClick={handleDoubleClick}
       >
         <div
           className="world"
@@ -195,8 +410,44 @@ function App() {
               key={item.id}
               item={item}
               zoom={camera.zoom}
+              onEditText={handleEditText}
             />
           ))}
+
+          {/* Text input for creating/editing text notes */}
+          {editingText && (
+            <textarea
+              ref={textInputRef}
+              className="text-input"
+              style={{
+                position: 'absolute',
+                left: editingText.x,
+                top: editingText.y,
+                width: textDimensions.width,
+                height: textDimensions.height,
+                minHeight: 60,
+                maxWidth: 600,
+                maxHeight: 400,
+                padding: '8px',
+                fontSize: '14px',
+                border: '2px solid #4a9eff',
+                borderRadius: '4px',
+                background: '#2a2a2a',
+                color: 'white',
+                outline: 'none',
+                zIndex: 1000,
+                resize: 'both',
+                fontFamily: 'inherit',
+                lineHeight: '1.5',
+                boxSizing: 'border-box'
+              }}
+              value={textValue}
+              onChange={(e) => setTextValue(e.target.value)}
+              onBlur={saveTextNote}
+              onKeyDown={handleTextKeyDown}
+              placeholder="Type your note... (Shift+Enter for new line)"
+            />
+          )}
         </div>
       </div>
 

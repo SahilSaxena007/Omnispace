@@ -51,8 +51,8 @@ src/
 - [x] Zoom controls (Step 5 ✓)
 - [x] Load items from Supabase (Step 6 ✓)
 - [x] Render items on canvas (Step 7 ✓)
-- [ ] File drop upload
-- [ ] Text notes (double-click)
+- [x] File drop upload (Step 8 ✓)
+- [x] Text notes (double-click) (Step 9 ✓)
 - [ ] Drag items to reposition
 - [ ] Rectangle drawing tool
 - [ ] Toolbar

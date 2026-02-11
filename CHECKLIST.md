@@ -116,52 +116,43 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 ---
 
-## Step 8: File Drop Upload
+## Step 8: File Drop Upload ✓
 **Goal:** Drag files from desktop, upload to Supabase, show on canvas.
 
-- [ ] Add `onDragOver={e => e.preventDefault()}` to viewport
-- [ ] Add `onDrop` handler to viewport:
-  1. Get file from `e.dataTransfer.files[0]`
-  2. Convert drop position to world coords:
-     ```js
-     worldX = (e.clientX - window.innerWidth/2) / zoom + camera.x
-     worldY = (e.clientY - window.innerHeight/2) / zoom + camera.y
-     ```
-  3. Generate unique path: `${Date.now()}_${file.name}`
-  4. Upload: `await supabase.storage.from('files').upload(path, file)`
-  5. Get URL: `supabase.storage.from('files').getPublicUrl(path).data.publicUrl`
-  6. Insert row:
-     ```js
-     await supabase.from('items').insert({
-       type: 'file', x: worldX, y: worldY,
-       width: 180, height: 120,
-       content: publicUrl, file_name: file.name
-     }).select()
-     ```
-  7. Add returned item to `items` state
+- [x] Add `onDragOver={e => e.preventDefault()}` to viewport
+- [x] Add `onDrop` handler to viewport with complete pipeline:
+  - Get file from `e.dataTransfer.files[0]`
+  - Convert drop position to world coords using camera transform
+  - Generate unique path: `${Date.now()}_${file.name}`
+  - Upload to Supabase Storage: `supabase.storage.from('files').upload(path, file)`
+  - Get public URL from storage
+  - Insert database record with type='file', position, URL, and filename
+  - Add returned item to local state for immediate UI update
+- [x] Added error handling with user alerts
+- [x] Added console logging for debugging
+- [x] File cards appear at exact drop location (world coordinates)
+- [x] Works correctly with pan and zoom
 
 ---
 
-## Step 9: Text Notes (Double-Click)
+## Step 9: Text Notes (Double-Click) ✓
 **Goal:** Double-click canvas to create a text note.
 
-- [ ] Create state: `const [editingText, setEditingText] = useState(null)` — holds `{ x, y }` or null
-- [ ] On `dblclick` on viewport (not on an item):
-  - Convert to world coords
+- [x] Create state: `editingText` (holds position) and `textValue` (input content)
+- [x] On `dblclick` on viewport (not on an item):
+  - Convert screen coordinates to world coordinates
   - Set `editingText = { x: worldX, y: worldY }`
-- [ ] When `editingText` is set, render an `<input>` inside the world div at that position
-- [ ] On blur or Enter key:
-  1. If value is non-empty, insert into Supabase:
-     ```js
-     await supabase.from('items').insert({
-       type: 'text', x, y,
-       width: 200, height: 40,
-       content: inputValue
-     }).select()
-     ```
-  2. Add to items state
-  3. Clear `editingText`
-- [ ] Auto-focus the input when it appears
+  - Clear textValue for new input
+- [x] Render `<input>` inside world div at editingText position
+- [x] On blur or Enter key:
+  - Validate: only save if text is non-empty
+  - Insert into Supabase with type='text', position, and content
+  - Add to items state for immediate UI update
+  - Clear editingText
+- [x] On Escape key: Cancel editing without saving
+- [x] Auto-focus input when it appears (useEffect + ref)
+- [x] Added placeholder text "Type your note..."
+- [x] Styled input with blue border and dark background
 
 ---
 

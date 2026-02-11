@@ -1,10 +1,14 @@
 import './CanvasItem.css';
 
-function CanvasItem({ item, zoom }) {
+function CanvasItem({ item, zoom, onEditText }) {
   const handleClick = (e) => {
+    e.stopPropagation();
+
     if (item.type === 'file') {
-      e.stopPropagation();
       window.open(item.content, '_blank');
+    } else if (item.type === 'text' && onEditText) {
+      // Trigger edit mode for text notes
+      onEditText(item);
     }
   };
 
